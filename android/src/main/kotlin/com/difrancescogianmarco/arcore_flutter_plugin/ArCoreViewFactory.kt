@@ -9,7 +9,9 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 
-class ArCoreViewFactory(val activity: Activity, val messenger: BinaryMessenger) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class ArCoreViewFactory(act: Activity?, val messenger: BinaryMessenger) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+
+    private var activity = act as Activity
 
     override fun create(context: Context, id: Int, args: Any?): PlatformView {
         val params = args as HashMap<*, *>
