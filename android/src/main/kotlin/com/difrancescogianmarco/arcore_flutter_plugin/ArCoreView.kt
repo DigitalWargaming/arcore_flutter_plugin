@@ -60,6 +60,8 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
     private val faceNodeMap = HashMap<AugmentedFace, AugmentedFaceNode>()
 
     init {
+                debugLog("starting ********** ")
+
         methodChannel.setMethodCallHandler(this)
         arSceneView = ArSceneView(context)
         // Set up a tap gesture detector.
@@ -141,9 +143,9 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
     }
 
     fun debugLog(message: String) {
-        if (debug) {
+        // if (debug) {
             Log.i(TAG, message)
-        }
+        // }
     }
 
 
@@ -516,12 +518,13 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
         if (arSceneView != null) {
             onPause()
             onDestroy()
+            ArSceneView.destroyAllResources();
         }
     }
 
     fun onResume() {
-        debugLog("onResume()")
-
+        debugLog("onResume() ** ")
+        
         if (arSceneView == null) {
             return
         }
@@ -535,6 +538,7 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
             debugLog("session is null")
             try {
                 val session = ArCoreUtils.createArSession(activity, mUserRequestedInstall, isAugmentedFaces)
+                
                 if (session == null) {
                     // Ensures next invocation of requestInstall() will either return
                     // INSTALLED or throw an exception.
@@ -562,6 +566,7 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
         }
 
         try {
+            debugLog("calling resume -- good luck")
             arSceneView?.resume()
         } catch (ex: CameraNotAvailableException) {
             ArCoreUtils.displayError(activity, "Unable to get camera", ex)
@@ -581,18 +586,22 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
         }
     }
 
-    fun onDestroy() {
+    fun onDestroy() {        
+        // Log("dispose ********** ")
+        debugLog("dispose ********** ")
       if (arSceneView != null) {
             debugLog("Goodbye ARCore! Destroying the Activity now 7.")
 
             try {
-                arSceneView?.scene?.removeOnUpdateListener(sceneUpdateListener)
-                arSceneView?.scene?.removeOnUpdateListener(faceSceneUpdateListener)
                 debugLog("Goodbye arSceneView.")
 
+                arSceneView?.session?.close()
+                arSceneView?.scene?.removeOnUpdateListener(sceneUpdateListener)
+                arSceneView?.scene?.removeOnUpdateListener(faceSceneUpdateListener)
                 arSceneView?.destroy()
-                arSceneView = null
 
+                arSceneView = null
+                debugLog("dispose completed ********** ")
             }catch (e : Exception){
                 e.printStackTrace();
            }
